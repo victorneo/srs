@@ -1,0 +1,1 @@
+a state or condition markedly different from the norm
