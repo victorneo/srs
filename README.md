@@ -1,5 +1,7 @@
 # SRS
 
+![Screenshot](screenshot.png)
+
 A simple SRS app that reads cards from directories and markdown
 files as cards.
 
