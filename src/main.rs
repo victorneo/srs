@@ -1,67 +1,17 @@
+use std::io;
 use rand::thread_rng;
 use rand::seq::SliceRandom;
-use std::fs;
-use std::fs::File;
-use std::io;
-use std::io::prelude::*;
-use crate::models::card::Card;
-use crate::models::dir::Directory;
-pub mod models;
-
-
-fn load_cards(dir_name: &str, cards: &mut Vec<Card>) {
-    let paths = fs::read_dir(dir_name).unwrap();
-
-    // Get filenames in each directory
-    for path in paths {
-        // Ignore .DS_Store
-        let p = path.unwrap();
-        let fname = p.file_name();
-        if fname == ".DS_Store" {
-            println!("Note: Found .DS_Store, skipping");
-            continue;
-        }
-
-        let metadata = p.metadata().unwrap();
-        if metadata.is_dir() {
-            continue;
-        }
-
-        let mut file = File::open(p.path()).unwrap();
-        let mut contents = String::new();
-        file.read_to_string(&mut contents).unwrap();
-
-        let card = Card {
-            title: String::from(fname.to_str().unwrap().trim_end_matches(".md")),
-            body: contents,
-        };
-        cards.push(card);
-    }
-}
-
-
-fn load_directories(dir_name: &str, dirs: &mut Vec<Directory>) {
-    let paths = fs::read_dir(dir_name).unwrap();
-
-    for path in paths {
-        let p = path.unwrap();
-        let metadata = p.metadata().unwrap();
-        if metadata.is_dir() {
-            let dir = Directory {
-                file_name: String::from(p.file_name().to_str().unwrap()),
-                path: String::from(p.path().to_str().unwrap()),
-            };
-            dirs.push(dir);
-        }
-    }
-}
+use models::card::Card;
+use models::dir::Directory;
+mod models;
+mod loaders;
 
 
 fn main() {
     let mut cards : Vec<Card> = Vec::new();
     let mut dirs : Vec<Directory> = Vec::new();
 
-    load_directories("./samples", &mut dirs);
+    loaders::load_directories("./samples", &mut dirs);
 
     if dirs.len() == 0 {
         println!("No directories in given path");
@@ -83,9 +33,13 @@ fn main() {
     }
 
     let dir = dirs.get(input-1).unwrap();
-    
+
+    let mut easy_count = 0;
+    let mut normal_count = 0;
+    let mut tough_count = 0;
+
     // Load cards from chosen directory
-    load_cards(&dir.path, &mut cards);
+    loaders::load_cards(&dir.path, &mut cards);
     println!("Loaded {} cards", cards.len());
     cards.shuffle(&mut thread_rng());
 
@@ -96,6 +50,17 @@ fn main() {
         let mut guess = String::new();
         io::stdin().read_line(&mut guess).expect("Failed to read line");
         let guess : u32 = guess.trim().parse().expect("Number needed");
+
+        match guess {
+            1 => easy_count += 1,
+            2 => normal_count += 1,
+            3 => tough_count += 1,
+            _ => println!("Invalid input"),
+        }
+
         println!("Answer: {}", card.body);
     }
+
+    println!("---\nSummary");
+    println!("Easy: {}, Normal: {}, Tough: {}", easy_count, normal_count, tough_count);
 }
