@@ -7,7 +7,7 @@ files as cards.
 
 ## Roadmap
 
-#### V1
+#### V1: done
 - Read cards from directories
 - Randomly schedule and ask cards
 
