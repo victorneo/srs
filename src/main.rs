@@ -1,4 +1,5 @@
 use std::io;
+use std::env;
 use rand::thread_rng;
 use rand::seq::SliceRandom;
 use models::card::Card;
@@ -11,7 +12,14 @@ fn main() {
     let mut cards : Vec<Card> = Vec::new();
     let mut dirs : Vec<Directory> = Vec::new();
 
-    loaders::load_directories("./samples", &mut dirs);
+    let args: Vec<String> = env::args().collect();
+    let mut path = "./";
+
+    if args.len() > 1 {
+        path = &args[1];
+    }
+
+    loaders::load_directories(path, &mut dirs);
 
     if dirs.len() == 0 {
         println!("No directories in given path");

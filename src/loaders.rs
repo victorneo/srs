@@ -43,8 +43,15 @@ pub fn load_directories(dir_name: &str, dirs: &mut Vec<Directory>) {
         let p = path.unwrap();
         let metadata = p.metadata().unwrap();
         if metadata.is_dir() {
+            let fname = p.file_name();
+            let fname_str = fname.to_str().unwrap();
+
+            if fname_str.starts_with(".") {
+                continue;
+            }
+
             let dir = Directory {
-                file_name: String::from(p.file_name().to_str().unwrap()),
+                file_name: String::from(fname_str),
                 path: String::from(p.path().to_str().unwrap()),
             };
             dirs.push(dir);
