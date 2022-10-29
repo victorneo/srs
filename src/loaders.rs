@@ -10,11 +10,11 @@ pub fn load_cards(dir_name: &str, cards: &mut Vec<Card>) {
 
     // Get filenames in each directory
     for path in paths {
-        // Ignore .DS_Store
+        // Ignore hidden files
         let p = path.unwrap();
         let fname = p.file_name();
-        if fname == ".DS_Store" {
-            println!("Note: Found .DS_Store, skipping");
+        let fname_str = fname.to_str().unwrap();
+        if fname_str.starts_with(".") {
             continue;
         }
 
@@ -28,7 +28,7 @@ pub fn load_cards(dir_name: &str, cards: &mut Vec<Card>) {
         file.read_to_string(&mut contents).unwrap();
 
         let card = Card {
-            title: String::from(fname.to_str().unwrap().trim_end_matches(".md")),
+            title: String::from(fname_str.trim_end_matches(".md")),
             body: contents,
         };
         cards.push(card);
